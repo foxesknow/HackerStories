@@ -27,13 +27,12 @@ namespace HackerStories
         {
             var settings = options.Value;
             
+            if(string.IsNullOrWhiteSpace(settings.Endpoint)) throw new ArgumentException("endpoint is invalid", nameof(options));
+
             m_Endpoint = settings.Endpoint;
             m_Expiry = settings.Expiry;
-
-            if(string.IsNullOrWhiteSpace(m_Endpoint)) throw new ArgumentException("endpoint is invalid", nameof(options));
         }
-
-        
+                
         /// <inheritdoc/>
         public void Dispose()
         {

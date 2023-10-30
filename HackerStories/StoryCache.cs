@@ -21,21 +21,28 @@ namespace HackerStories
         private readonly TimeSpan m_Expiry = TimeSpan.FromSeconds(10);
         private readonly string m_EndpointMask = "";
 
+        /// <summary>
+        /// Initializes the instance
+        /// </summary>
+        /// <param name="options"></param>
+        /// <exception cref="ArgumentException"></exception>
         public StoryCache(IOptions<StoryCacheSettings> options)
         {
             var settings = options.Value;
 
+            if(string.IsNullOrWhiteSpace(settings.EndpointMask)) throw new ArgumentException("endpoint mask is invalid", nameof(options));
+
             m_EndpointMask = settings.EndpointMask;
             m_Expiry = settings.Expiry;
-
-            if(string.IsNullOrWhiteSpace(m_EndpointMask)) throw new ArgumentException("endpoint mask is invalid", nameof(options));
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             m_HttpClient.Dispose();
         }
 
+        /// <inheritdoc/>
         public Task<StoryDetails> GetStory(long storyID)
         {
             var cacheData = m_Cache.AddOrUpdate

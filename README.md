@@ -23,8 +23,10 @@ The application is configured via the **appsettings.json** file. There are two c
 | Setting      | Description |
 |--------------|-------------|
 | EndpointMask | A C# format string that takes a single value (in {0}) that is used to generate the endpoint for a story |
-| Expiry   | How long to cache the story before re-downloading it from the endpoint |
+| Expiry       | How long to cache the story before re-downloading it from the endpoint |
 
 
 ## Assumptions Made
-It is assumed that it is reasonable to cache the Hacker News data locally for a period of time
+It is assumed that it is reasonable to cache the Hacker News data locally for a period of time. If you do not want to cache the data locally then setting **Expiry** to "00:00:00" will disable caching the data.
+
+Calling the web service without a **count** will return an empty array. Instead of doing this we could default to a given number of stories so that something is always returned.
