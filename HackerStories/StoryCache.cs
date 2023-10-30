@@ -1,15 +1,16 @@
 ﻿using System.Text.Json;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
+using HackerStories.Controllers;
 
 namespace HackerStories
 {
     /// <summary>
     /// Loads and caches story details
     /// </summary>
-    public sealed class StoryCache : IStoryCache, IDisposable
+    public sealed class StoryCache : IStoryCache
     {
-        private readonly HttpClient m_HttpClient = new();
+        private readonly IDataLoader m_DataLoader;
 
         private readonly JsonSerializerOptions m_JsonOptions = new()
         {
@@ -26,20 +27,16 @@ namespace HackerStories
         /// </summary>
         /// <param name="options"></param>
         /// <exception cref="ArgumentException"></exception>
-        public StoryCache(IOptions<StoryCacheSettings> options)
+        public StoryCache(IOptions<StoryCacheSettings> options, IDataLoader dataLoader)
         {
+            m_DataLoader = dataLoader;
+
             var settings = options.Value;
 
             if(string.IsNullOrWhiteSpace(settings.EndpointMask)) throw new ArgumentException("endpoint mask is invalid", nameof(options));
 
             m_EndpointMask = settings.EndpointMask;
             m_Expiry = settings.Expiry;
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            m_HttpClient.Dispose();
         }
 
         /// <inheritdoc/>
@@ -67,9 +64,9 @@ namespace HackerStories
 
             var lazyLoad = new Lazy<Task<StoryDetails>>(async () =>
             {
-                var response = await m_HttpClient.GetAsync(endpoint).ConfigureAwait(false);
+                var stream = await m_DataLoader.Get(endpoint).ConfigureAwait(false);
 
-                var incoming = JsonSerializer.Deserialize<IncomingData>(response.Content.ReadAsStream(), m_JsonOptions);
+                var incoming = JsonSerializer.Deserialize<IncomingData>(stream, m_JsonOptions);
                 if(incoming is null) throw new Exception($"could not load story {storyID}");
 
                 var storyDetails = new StoryDetails

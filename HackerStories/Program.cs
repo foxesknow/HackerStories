@@ -1,3 +1,5 @@
+using HackerStories.Controllers;
+
 namespace HackerStories
 {
     public class Program
@@ -10,9 +12,9 @@ namespace HackerStories
             builder.Services.Configure<AllStoriesSettings>(builder.Configuration.GetSection(AllStoriesSettings.AllStories));
             builder.Services.Configure<StoryCacheSettings>(builder.Configuration.GetSection(StoryCacheSettings.StoryCache));
 
+            builder.Services.AddSingleton<IDataLoader, HttpDataLoader>();
             builder.Services.AddSingleton<IAllStories, AllStories>();
-            builder.Services.AddSingleton<IStoryCache, StoryCache>();
-            
+            builder.Services.AddSingleton<IStoryCache, StoryCache>();            
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

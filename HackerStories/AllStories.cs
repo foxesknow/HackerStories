@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using HackerStories.Controllers;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace HackerStories
@@ -6,9 +7,9 @@ namespace HackerStories
     /// <summary>
     /// Loads all stories from a http endpoint
     /// </summary>
-    public sealed class AllStories : IAllStories, IDisposable
+    public sealed class AllStories : IAllStories
     {
-        private readonly HttpClient m_HttpClient = new();
+        private readonly IDataLoader m_DataLoader;
 
         private readonly object m_SyncRoot = new ();
         
@@ -23,20 +24,16 @@ namespace HackerStories
         /// </summary>
         /// <param name="options"></param>
         /// <exception cref="ArgumentException"></exception>
-        public AllStories(IOptions<AllStoriesSettings> options)
+        public AllStories(IOptions<AllStoriesSettings> options, IDataLoader dataLoader)
         {
+            m_DataLoader = dataLoader;
+
             var settings = options.Value;
             
             if(string.IsNullOrWhiteSpace(settings.Endpoint)) throw new ArgumentException("endpoint is invalid", nameof(options));
 
             m_Endpoint = settings.Endpoint;
             m_Expiry = settings.Expiry;
-        }
-                
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            m_HttpClient.Dispose();
         }
 
         /// <inheritdoc/>
@@ -76,9 +73,8 @@ namespace HackerStories
         {
             return new(async () =>
             {
-                var response = await m_HttpClient.GetAsync(m_Endpoint).ConfigureAwait(false);
-
-                var stories = JsonSerializer.Deserialize<List<long>>(response.Content.ReadAsStream());
+                var stream = await m_DataLoader.Get(m_Endpoint).ConfigureAwait(false);
+                var stories = JsonSerializer.Deserialize<List<long>>(stream);
                 if(stories == null) throw new Exception("no stories found");
 
                 return stories;
