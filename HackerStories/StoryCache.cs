@@ -11,6 +11,7 @@ namespace HackerStories
     public sealed class StoryCache : IStoryCache
     {
         private readonly IDataLoader m_DataLoader;
+        private readonly IClock m_Clock;
 
         private readonly JsonSerializerOptions m_JsonOptions = new()
         {
@@ -27,9 +28,10 @@ namespace HackerStories
         /// </summary>
         /// <param name="options"></param>
         /// <exception cref="ArgumentException"></exception>
-        public StoryCache(IOptions<StoryCacheSettings> options, IDataLoader dataLoader)
+        public StoryCache(IOptions<StoryCacheSettings> options, IDataLoader dataLoader, IClock clock)
         {
             m_DataLoader = dataLoader;
+            m_Clock = clock;
 
             var settings = options.Value;
 
@@ -82,7 +84,7 @@ namespace HackerStories
                 return storyDetails;
             });
 
-            return new(lazyLoad);
+            return new(m_Clock, lazyLoad);
         }
 
         /// <summary>
@@ -124,14 +126,18 @@ namespace HackerStories
         /// </summary>
         sealed class CacheData
         {
-            private readonly DateTime m_CreatedUtc = DateTime.UtcNow;
+            private readonly IClock m_Clock;
+            private readonly DateTime m_CreatedUtc;
 
             /// <summary>
             /// Initializes the instance
             /// </summary>
             /// <param name="task"></param>
-            public CacheData(Lazy<Task<StoryDetails>> task)
+            public CacheData(IClock clock, Lazy<Task<StoryDetails>> task)
             {
+                m_Clock = clock;
+
+                m_CreatedUtc = clock.UtcNow;
                 this.Task = task;
             }
 
@@ -140,7 +146,7 @@ namespace HackerStories
             /// </summary>
             public TimeSpan Age
             {
-                get{return DateTime.UtcNow - m_CreatedUtc;}
+                get{return m_Clock.UtcNow - m_CreatedUtc;}
             }
 
             /// <summary>

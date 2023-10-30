@@ -10,11 +10,12 @@ namespace HackerStories
     public sealed class AllStories : IAllStories
     {
         private readonly IDataLoader m_DataLoader;
+        private readonly IClock m_Clock;
 
         private readonly object m_SyncRoot = new ();
         
         private Lazy<Task<IReadOnlyList<long>>>? m_LazyLoad;
-        private DateTime m_LastLoadUtc = DateTime.UtcNow;
+        private DateTime m_LastLoadUtc;
 
         private readonly string m_Endpoint = "";
         private readonly TimeSpan m_Expiry = TimeSpan.FromSeconds(10);
@@ -24,9 +25,10 @@ namespace HackerStories
         /// </summary>
         /// <param name="options"></param>
         /// <exception cref="ArgumentException"></exception>
-        public AllStories(IOptions<AllStoriesSettings> options, IDataLoader dataLoader)
+        public AllStories(IOptions<AllStoriesSettings> options, IDataLoader dataLoader, IClock clock)
         {
             m_DataLoader = dataLoader;
+            m_Clock = clock;
 
             var settings = options.Value;
             
@@ -34,6 +36,7 @@ namespace HackerStories
 
             m_Endpoint = settings.Endpoint;
             m_Expiry = settings.Expiry;
+            m_LastLoadUtc = clock.UtcNow;
         }
 
         /// <inheritdoc/>
@@ -50,7 +53,7 @@ namespace HackerStories
         /// <returns></returns>
         private Lazy<Task<IReadOnlyList<long>>> GetOrRefreshStories()
         {
-            var now = DateTime.UtcNow;
+            var now = m_Clock.UtcNow;
 
             lock(m_SyncRoot)
             {

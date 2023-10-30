@@ -13,6 +13,7 @@ namespace HackerStories
             builder.Services.Configure<StoryCacheSettings>(builder.Configuration.GetSection(StoryCacheSettings.StoryCache));
 
             builder.Services.AddSingleton<IDataLoader, HttpDataLoader>();
+            builder.Services.AddSingleton<IClock, WallClock>();
             builder.Services.AddSingleton<IAllStories, AllStories>();
             builder.Services.AddSingleton<IStoryCache, StoryCache>();            
 
