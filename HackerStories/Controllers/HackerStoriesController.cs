@@ -21,7 +21,7 @@ namespace HackerStories.Controllers
             m_StoryCache = storyCache;
         }
 
-        [HttpGet(Name = "GetStories")]
+        [HttpGet]
         public async Task<IEnumerable<StoryDetails>> GetStories(int count)
         {
             m_Logger.LogInformation("{Controller}.{Method} - getting {Count} stories", nameof(HackerStoriesController), nameof(GetStories), count);
