@@ -24,7 +24,7 @@ namespace HackerStories.Controllers
         [HttpGet(Name = "GetStories")]
         public async Task<IEnumerable<StoryDetails>> GetStories(int count)
         {
-            m_Logger.LogInformation($"{nameof(HackerStoriesController)}.{nameof(GetStories)} - getting {count} stories");
+            m_Logger.LogInformation("{Controller}.{Method} - getting {Count} stories", nameof(HackerStoriesController), nameof(GetStories), count);
 
             var allStories = await m_AllStories.GetBestStories();
 
@@ -47,10 +47,18 @@ namespace HackerStories.Controllers
             // Process anything that's left
             await ProcessBatch(batch, storyDetails);
 
-            return storyDetails;
+            /*
+             * The async nature of the "best stories" and story cache mean that
+             * when we download the invididual stories their scores may have changed
+             * since we got the "best stories" data, and this may cause the order to
+             * no longer be strictly descending.
+             * 
+             * A final sort here will ensure the data is sorted by score
+             */
+            return storyDetails.OrderByDescending(story => story.Score);
         }
 
-        private Task ProcessBatch(List<Task<StoryDetails>> batch, List<StoryDetails> storyDetails)
+        private static Task ProcessBatch(List<Task<StoryDetails>> batch, List<StoryDetails> storyDetails)
         {
             if(batch.Count == 0) return Task.CompletedTask;
 
