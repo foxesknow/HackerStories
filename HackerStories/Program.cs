@@ -1,5 +1,3 @@
-using HackerStories.Controllers;
-
 namespace HackerStories
 {
     public class Program
@@ -9,12 +7,12 @@ namespace HackerStories
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.Configure<AllStoriesSettings>(builder.Configuration.GetSection(AllStoriesSettings.AllStories));
-            builder.Services.Configure<StoryCacheSettings>(builder.Configuration.GetSection(StoryCacheSettings.StoryCache));
+            builder.Services.Configure<AllStoriesCacheSettings>(builder.Configuration.GetSection(AllStoriesCacheSettings.Name));
+            builder.Services.Configure<StoryCacheSettings>(builder.Configuration.GetSection(StoryCacheSettings.Name));
 
             builder.Services.AddSingleton<IDataLoader, HttpDataLoader>();
             builder.Services.AddSingleton<IClock, WallClock>();
-            builder.Services.AddSingleton<IAllStories, AllStories>();
+            builder.Services.AddSingleton<IAllStoriesCache, AllStoriesCache>();
             builder.Services.AddSingleton<IStoryCache, StoryCache>();            
 
             builder.Services.AddControllers();

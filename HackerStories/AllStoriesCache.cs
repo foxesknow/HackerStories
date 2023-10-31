@@ -1,5 +1,4 @@
-﻿using HackerStories.Controllers;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace HackerStories
@@ -7,7 +6,7 @@ namespace HackerStories
     /// <summary>
     /// Loads all stories from a http endpoint
     /// </summary>
-    public sealed class AllStories : IAllStories
+    public sealed class AllStoriesCache : IAllStoriesCache
     {
         private readonly IDataLoader m_DataLoader;
         private readonly IClock m_Clock;
@@ -25,7 +24,7 @@ namespace HackerStories
         /// </summary>
         /// <param name="options"></param>
         /// <exception cref="ArgumentException"></exception>
-        public AllStories(IOptions<AllStoriesSettings> options, IDataLoader dataLoader, IClock clock)
+        public AllStoriesCache(IOptions<AllStoriesCacheSettings> options, IDataLoader dataLoader, IClock clock)
         {
             m_DataLoader = dataLoader;
             m_Clock = clock;

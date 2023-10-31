@@ -3,9 +3,9 @@
     /// <summary>
     /// Defines the settings for all stories that can be loaded from application configuration
     /// </summary>
-    public sealed class AllStoriesSettings
+    public sealed class AllStoriesCacheSettings
     {
-        public const string AllStories = "AllStories";
+        public const string Name = "AllStoriesCache";
 
         /// <summary>
         /// The endpoint to load all stories from

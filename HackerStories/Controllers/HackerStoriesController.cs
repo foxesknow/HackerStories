@@ -11,10 +11,10 @@ namespace HackerStories.Controllers
 
         private readonly ILogger<HackerStoriesController> m_Logger;
 
-        private readonly IAllStories m_AllStories;
+        private readonly IAllStoriesCache m_AllStories;
         private readonly IStoryCache m_StoryCache;
 
-        public HackerStoriesController(ILogger<HackerStoriesController> logger, IAllStories allStories, IStoryCache storyCache)
+        public HackerStoriesController(ILogger<HackerStoriesController> logger, IAllStoriesCache allStories, IStoryCache storyCache)
         {
             m_Logger = logger;
             m_AllStories = allStories;

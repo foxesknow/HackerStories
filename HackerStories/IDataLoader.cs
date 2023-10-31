@@ -1,4 +1,4 @@
-﻿namespace HackerStories.Controllers
+﻿namespace HackerStories
 {
     /// <summary>
     /// Defines how we load data from somewhere

@@ -1,6 +1,4 @@
-﻿using HackerStories.Controllers;
-
-namespace HackerStories
+﻿namespace HackerStories
 {
     /// <summary>
     /// A data loader that loads from a http endpoint

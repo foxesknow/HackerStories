@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
-using HackerStories.Controllers;
 
 namespace HackerStories
 {

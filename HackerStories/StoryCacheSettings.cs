@@ -5,7 +5,7 @@
     /// </summary>
     public sealed class StoryCacheSettings
     {
-        public const string StoryCache = "StoryCache";
+        public const string Name = "StoryCache";
 
         /// <summary>
         /// The C# format mask used to create the endpoint to load story details from

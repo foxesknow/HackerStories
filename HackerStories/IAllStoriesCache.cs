@@ -1,6 +1,6 @@
 ﻿namespace HackerStories
 {
-    public interface IAllStories
+    public interface IAllStoriesCache
     {
         /// <summary>
         /// Returns the best stories, ordered from highest score to lowest score
