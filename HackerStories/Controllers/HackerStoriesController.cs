@@ -11,70 +11,20 @@ namespace HackerStories.Controllers
 
         private readonly ILogger<HackerStoriesController> m_Logger;
 
-        private readonly IAllStoriesCache m_AllStories;
-        private readonly IStoryCache m_StoryCache;
+        private readonly IBestStories m_BestStories;
 
-        public HackerStoriesController(ILogger<HackerStoriesController> logger, IAllStoriesCache allStories, IStoryCache storyCache)
+        public HackerStoriesController(ILogger<HackerStoriesController> logger, IBestStories bestStories)
         {
             m_Logger = logger;
-            m_AllStories = allStories;
-            m_StoryCache = storyCache;
+            m_BestStories = bestStories;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<StoryDetails>> GetStories(int count)
+        public Task<IReadOnlyList<StoryDetails>> GetStories(int count)
         {
             m_Logger.LogInformation("{Controller}.{Method} - getting {Count} stories", nameof(HackerStoriesController), nameof(GetStories), count);
 
-            var allStories = await m_AllStories.GetBestStories();
-
-            var storyDetails = new List<StoryDetails>(count);
-
-            // We'll request story details in batches to improve throughput
-            var batch = new List<Task<StoryDetails>>(m_BatchSize);
-
-            foreach(long storyID in allStories.Take(count))
-            {
-                var task = m_StoryCache.GetStory(storyID);
-                batch.Add(task);
-
-                if(batch.Count == m_BatchSize)
-                {
-                    await ProcessBatch(batch, storyDetails);
-                }
-            }
-
-            // Process anything that's left
-            await ProcessBatch(batch, storyDetails);
-
-            /*
-             * The async nature of the "best stories" and story cache mean that
-             * when we download the invididual stories their scores may have changed
-             * since we got the "best stories" data, and this may cause the order to
-             * no longer be strictly descending.
-             * 
-             * A final sort here will ensure the data is sorted by score
-             */
-            return storyDetails.OrderByDescending(story => story.Score);
-        }
-
-        private static Task ProcessBatch(List<Task<StoryDetails>> batch, List<StoryDetails> storyDetails)
-        {
-            if(batch.Count == 0) return Task.CompletedTask;
-
-            return Execute(batch, storyDetails);
-
-            static async Task Execute(List<Task<StoryDetails>> batch, List<StoryDetails> storyDetails)
-            {
-                await Task.WhenAll(batch);
-
-                foreach(var task in batch)
-                {
-                    storyDetails.Add(task.Result);
-                }
-
-                batch.Clear();
-            }
+            return m_BestStories.GetBestStories(count);
         }
     }
 }

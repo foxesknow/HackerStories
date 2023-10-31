@@ -11,9 +11,9 @@ Alternatively, once you are running the web service you can explicitly specify a
 To avoid putting too much load on the Hacker News website the server caches the best stories information it downloads, and the story information. The data is stored in an expiring cache that specified how long to hold onto the data before we should re-download it from the server.
 
 
-The application is configured via the **appsettings.json** file. There are two components you can configure, the **AllStories** loader, which is responsible for downloading all the stories available, and the **StoryCache** which caches the details of individual stories. The following settings are available:
+The application is configured via the **appsettings.json** file. There are two components you can configure, the **AllStoriesCache** loader, which is responsible for downloading all the stories available, and the **StoryCache** which caches the details of individual stories. The following settings are available:
 
-### AllStories
+### AllStoriesCache
 | Setting  | Description |
 |----------|-------------|
 | Endpoint | The url where the best stories json can be loaded from |
