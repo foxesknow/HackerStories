@@ -31,7 +31,7 @@
         {
             if(count < 0) throw new ArgumentException($"invalid count: {count}", nameof(count));
 
-            var allStories = await m_RankingCache.GetBestStories();
+            var allStories = await m_RankingCache.GetBestStories().ConfigureAwait(false);
 
             var storyDetails = new List<StoryDetails>(count);
 
@@ -45,12 +45,12 @@
 
                 if (batch.Count == m_BatchSize)
                 {
-                    await WaitForBatch(batch, storyDetails);
+                    await WaitForBatch(batch, storyDetails).ConfigureAwait(false);
                 }
             }
 
             // Process anything that's left
-            await WaitForBatch(batch, storyDetails);
+            await WaitForBatch(batch, storyDetails).ConfigureAwait(false);
 
             /*
              * The async nature of the "best stories" and story cache mean that
@@ -77,7 +77,7 @@
 
             static async Task Execute(List<Task<StoryDetails>> batch, List<StoryDetails> storyDetails)
             {
-                await Task.WhenAll(batch);
+                await Task.WhenAll(batch).ConfigureAwait(false);
 
                 foreach (var task in batch)
                 {
