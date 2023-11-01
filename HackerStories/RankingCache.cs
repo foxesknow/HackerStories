@@ -4,9 +4,9 @@ using System.Text.Json;
 namespace HackerStories
 {
     /// <summary>
-    /// Loads all stories from a http endpoint
+    /// Maintains a cache of story rankings
     /// </summary>
-    public sealed class AllStoriesCache : IAllStoriesCache
+    public sealed class RankingCache : IRankingCache
     {
         private readonly IDataLoader m_DataLoader;
         private readonly IClock m_Clock;
@@ -24,8 +24,12 @@ namespace HackerStories
         /// </summary>
         /// <param name="options"></param>
         /// <exception cref="ArgumentException"></exception>
-        public AllStoriesCache(IOptions<AllStoriesCacheSettings> options, IDataLoader dataLoader, IClock clock)
+        public RankingCache(IOptions<RankingCacheSettings> options, IDataLoader dataLoader, IClock clock)
         {
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(dataLoader);
+            ArgumentNullException.ThrowIfNull(clock);
+
             m_DataLoader = dataLoader;
             m_Clock = clock;
 
@@ -75,11 +79,13 @@ namespace HackerStories
         {
             return new(async () =>
             {
-                var stream = await m_DataLoader.Get(m_Endpoint).ConfigureAwait(false);
-                var stories = JsonSerializer.Deserialize<List<long>>(stream);
-                if(stories == null) throw new Exception("no stories found");
+                using(var stream = await m_DataLoader.Get(m_Endpoint).ConfigureAwait(false))
+                {
+                    var stories = JsonSerializer.Deserialize<List<long>>(stream);
+                    if(stories == null) throw new Exception("no stories found");
 
-                return stories;
+                    return stories;
+                }
             });
         }
 

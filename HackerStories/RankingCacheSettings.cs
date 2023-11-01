@@ -3,9 +3,9 @@
     /// <summary>
     /// Defines the settings for all stories that can be loaded from application configuration
     /// </summary>
-    public sealed class AllStoriesCacheSettings
+    public sealed class RankingCacheSettings
     {
-        public const string Name = "AllStoriesCache";
+        public const string Name = "RankingCache";
 
         /// <summary>
         /// The endpoint to load all stories from

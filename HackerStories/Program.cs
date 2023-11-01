@@ -7,13 +7,13 @@ namespace HackerStories
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.Configure<AllStoriesCacheSettings>(builder.Configuration.GetSection(AllStoriesCacheSettings.Name));
+            builder.Services.Configure<RankingCacheSettings>(builder.Configuration.GetSection(RankingCacheSettings.Name));
             builder.Services.Configure<StoryCacheSettings>(builder.Configuration.GetSection(StoryCacheSettings.Name));
 
             builder.Services.AddSingleton<IBestStories, BestStories>();
             builder.Services.AddSingleton<IDataLoader, HttpDataLoader>();
             builder.Services.AddSingleton<IClock, WallClock>();
-            builder.Services.AddSingleton<IAllStoriesCache, AllStoriesCache>();
+            builder.Services.AddSingleton<IRankingCache, RankingCache>();
             builder.Services.AddSingleton<IStoryCache, StoryCache>();            
 
             builder.Services.AddControllers();

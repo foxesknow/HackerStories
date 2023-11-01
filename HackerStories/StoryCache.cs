@@ -29,6 +29,10 @@ namespace HackerStories
         /// <exception cref="ArgumentException"></exception>
         public StoryCache(IOptions<StoryCacheSettings> options, IDataLoader dataLoader, IClock clock)
         {
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(dataLoader);
+            ArgumentNullException.ThrowIfNull(clock);
+
             m_DataLoader = dataLoader;
             m_Clock = clock;
 
@@ -65,22 +69,23 @@ namespace HackerStories
 
             var lazyLoad = new Lazy<Task<StoryDetails>>(async () =>
             {
-                var stream = await m_DataLoader.Get(endpoint).ConfigureAwait(false);
-
-                var incoming = JsonSerializer.Deserialize<IncomingData>(stream, m_JsonOptions);
-                if(incoming is null) throw new Exception($"could not load story {storyID}");
-
-                var storyDetails = new StoryDetails
+                using(var stream = await m_DataLoader.Get(endpoint).ConfigureAwait(false))
                 {
-                    Title = incoming.Title,
-                    Uri = incoming.Url,
-                    PostedBy = incoming.By,
-                    Time = FromUnixTime(incoming.Time),
-                    CommentCount = incoming.Kids?.Count ?? 0,
-                    Score = incoming.Score
-                };
+                    var incoming = JsonSerializer.Deserialize<IncomingData>(stream, m_JsonOptions);
+                    if(incoming is null) throw new Exception($"could not load story {storyID}");
 
-                return storyDetails;
+                    var storyDetails = new StoryDetails
+                    {
+                        Title = incoming.Title,
+                        Uri = incoming.Url,
+                        PostedBy = incoming.By,
+                        Time = FromUnixTime(incoming.Time),
+                        CommentCount = incoming.Kids?.Count ?? 0,
+                        Score = incoming.Score
+                    };
+
+                    return storyDetails;
+                }
             });
 
             return new(m_Clock, lazyLoad);

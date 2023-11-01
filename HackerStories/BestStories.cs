@@ -9,17 +9,20 @@
         // to avoid having to many simultation calls to GetStory outstanding.
         private readonly int m_BatchSize = Math.Max(16, Environment.ProcessorCount);
         
-        private readonly IAllStoriesCache m_AllStories;
+        private readonly IRankingCache m_RankingCache;
         private readonly IStoryCache m_StoryCache;
 
         /// <summary>
         /// Initializes the instance
         /// </summary>
-        /// <param name="allStories">The all stories cache</param>
+        /// <param name="rankingCache">The ranking cache</param>
         /// <param name="storyCache">The individual story cache</param>
-        public BestStories(IAllStoriesCache allStories, IStoryCache storyCache)
+        public BestStories(IRankingCache rankingCache, IStoryCache storyCache)
         {
-            m_AllStories = allStories;
+            ArgumentNullException.ThrowIfNull(rankingCache);
+            ArgumentNullException.ThrowIfNull(storyCache);
+
+            m_RankingCache = rankingCache;
             m_StoryCache = storyCache;
         }
 
@@ -28,7 +31,7 @@
         {
             if(count < 0) throw new ArgumentException($"invalid count: {count}", nameof(count));
 
-            var allStories = await m_AllStories.GetBestStories();
+            var allStories = await m_RankingCache.GetBestStories();
 
             var storyDetails = new List<StoryDetails>(count);
 

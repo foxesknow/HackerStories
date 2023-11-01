@@ -11,9 +11,9 @@ Alternatively, once you are running the web service you can explicitly specify a
 To avoid putting too much load on the Hacker News website the server caches the best stories information it downloads, and the story information. The data is stored in an expiring cache that specified how long to hold onto the data before we should re-download it from the server.
 
 
-The application is configured via the **appsettings.json** file. There are two components you can configure, the **AllStoriesCache** loader, which is responsible for downloading all the stories available, and the **StoryCache** which caches the details of individual stories. The following settings are available:
+The application is configured via the **appsettings.json** file. There are two components you can configure, the **RankingCache** loader, which is responsible for downloading all the stories available, and the **StoryCache** which caches the details of individual stories. The following settings are available:
 
-### AllStoriesCache
+### RankingCache
 | Setting  | Description |
 |----------|-------------|
 | Endpoint | The url where the best stories json can be loaded from |
@@ -30,3 +30,5 @@ The application is configured via the **appsettings.json** file. There are two c
 It is assumed that it is reasonable to cache the Hacker News data locally for a period of time. If you do not want to cache the data locally then setting **Expiry** to "00:00:00" will disable caching the data.
 
 Calling the web service without a **count** will return an empty array. Instead of doing this we could default to a given number of stories so that something is always returned.
+
+If you ask for more stories than are available it will return all the stories, which will be less than what you requested.
