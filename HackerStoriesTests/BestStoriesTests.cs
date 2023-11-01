@@ -33,10 +33,7 @@ namespace HackerStoriesTests
         [Test]
         public void Initialization()
         {
-            var rankingCache = new RankingCache(MakeRankingCacheSettings(), m_DataLoader, m_Clock);
-            var storyCache = new StoryCache(MakeStoryCacheSettings(), m_DataLoader, m_Clock);
-
-            Assert.DoesNotThrow(() => new BestStories(rankingCache, storyCache));
+            Assert.DoesNotThrow(() => new BestStories(m_RankingCache, m_StoryCache));
         }
 
         [Test]

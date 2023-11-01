@@ -89,6 +89,7 @@ namespace HackerStoriesTests
             Assert.That(story1.CommentCount, Is.EqualTo(56));
             Assert.That(story1.Time, Is.EqualTo(DateTime.Parse("2023-10-31T08:22:42Z")));
 
+            // Move past the cache expiry time, which will cause the story to be refetched
             m_Clock.Advance(TimeSpan.FromSeconds(30));
 
             var story2 = await cache.GetStory(38081633);

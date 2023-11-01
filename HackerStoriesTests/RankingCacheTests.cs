@@ -80,6 +80,7 @@ namespace HackerStoriesTests
             Assert.That(rankings1[1], Is.EqualTo(38069710));
             Assert.That(rankings1[2], Is.EqualTo(38078063));
 
+            // Move past the cache expiry time, which will cause the rankings to be refetched
             m_Clock.Advance(TimeSpan.FromSeconds(20));
 
             var rankings2 = await cache.GetBestStories();
