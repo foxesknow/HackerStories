@@ -15,7 +15,7 @@ namespace HackerStoriesTests
 
         public void Add(string endpoint, string json)
         {
-            m_Data.Add(endpoint, json);
+            m_Data[endpoint] = json;
         }
 
         public int CallCount{get; private set;}

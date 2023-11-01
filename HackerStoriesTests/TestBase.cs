@@ -22,7 +22,7 @@ namespace HackerStoriesTests
         protected MockClock m_Clock;
 
         [SetUp]
-        public void Setup()
+        public virtual void Setup()
         {
             m_RankingCacheSettings = MakeRankingCacheSettings();
             m_StoryCacheSettings = MakeStoryCacheSettings();

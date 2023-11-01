@@ -13,15 +13,28 @@ namespace HackerStoriesTests
     [TestFixture]
     public class BestStoriesTests : TestBase
     {
+        private MockDataLoader m_DataLoader;
+
+        private RankingCache m_RankingCache;
+        private StoryCache m_StoryCache;
+
+        public override void Setup()
+        {
+            base.Setup();
+
+            m_DataLoader = new MockDataLoader();
+            m_DataLoader.Add("http://foo/beststories.json", "[38081633]");
+            m_DataLoader.Add("http://foo/stories/38081633.json", Story38081633);
+
+            m_RankingCache = new RankingCache(MakeRankingCacheSettings(), m_DataLoader, m_Clock);
+            m_StoryCache = new StoryCache(MakeStoryCacheSettings(), m_DataLoader, m_Clock);
+        }
+
         [Test]
         public void Initialization()
         {
-            var dataLoader = new MockDataLoader();
-            dataLoader.Add("http://foo/beststories.json", "[38081633]");
-            dataLoader.Add("http://foo/stories/38081633.json", Story38081633);
-
-            var rankingCache = new RankingCache(MakeRankingCacheSettings(), dataLoader, m_Clock);
-            var storyCache = new StoryCache(MakeStoryCacheSettings(), dataLoader, m_Clock);
+            var rankingCache = new RankingCache(MakeRankingCacheSettings(), m_DataLoader, m_Clock);
+            var storyCache = new StoryCache(MakeStoryCacheSettings(), m_DataLoader, m_Clock);
 
             Assert.DoesNotThrow(() => new BestStories(rankingCache, storyCache));
         }
@@ -29,14 +42,7 @@ namespace HackerStoriesTests
         [Test]
         public async Task GetBestStories()
         {
-            var dataLoader = new MockDataLoader();
-            dataLoader.Add("http://foo/beststories.json", "[38081633]");
-            dataLoader.Add("http://foo/stories/38081633.json", Story38081633);
-
-            var rankingCache = new RankingCache(MakeRankingCacheSettings(), dataLoader, m_Clock);
-            var storyCache = new StoryCache(MakeStoryCacheSettings(), dataLoader, m_Clock);
-
-            var bestStories = new BestStories(rankingCache, storyCache);
+            var bestStories = new BestStories(m_RankingCache, m_StoryCache);
             var stories = await bestStories.GetBestStories(1);
             Assert.That(stories, Is.Not.Null);
             Assert.That(stories.Count, Is.EqualTo(1));
@@ -53,14 +59,7 @@ namespace HackerStoriesTests
         [Test]
         public void GetBestStories_InvalidCount()
         {
-            var dataLoader = new MockDataLoader();
-            dataLoader.Add("http://foo/beststories.json", "[38081633]");
-            dataLoader.Add("http://foo/stories/38081633.json", Story38081633);
-
-            var rankingCache = new RankingCache(MakeRankingCacheSettings(), dataLoader, m_Clock);
-            var storyCache = new StoryCache(MakeStoryCacheSettings(), dataLoader, m_Clock);
-
-            var bestStories = new BestStories(rankingCache, storyCache);
+            var bestStories = new BestStories(m_RankingCache, m_StoryCache);
             
             Assert.CatchAsync(async () => await bestStories.GetBestStories(-10));
         }
@@ -68,15 +67,10 @@ namespace HackerStoriesTests
         [Test]
         public async Task StoriesAreOrdered()
         {
-            var dataLoader = new MockDataLoader();
-            dataLoader.Add("http://foo/beststories.json", "[38081633, 38071508]");
-            dataLoader.Add("http://foo/stories/38081633.json", Story38081633);
-            dataLoader.Add("http://foo/stories/38071508.json", Story38071508);
+            m_DataLoader.Add("http://foo/beststories.json", "[38081633, 38071508]");
+            m_DataLoader.Add("http://foo/stories/38071508.json", Story38071508);
 
-            var rankingCache = new RankingCache(MakeRankingCacheSettings(), dataLoader, m_Clock);
-            var storyCache = new StoryCache(MakeStoryCacheSettings(), dataLoader, m_Clock);
-
-            var bestStories = new BestStories(rankingCache, storyCache);
+            var bestStories = new BestStories(m_RankingCache, m_StoryCache);
             var stories = await bestStories.GetBestStories(2);
             Assert.That(stories, Is.Not.Null);
             Assert.That(stories.Count, Is.EqualTo(2));
