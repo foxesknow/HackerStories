@@ -1,5 +1,8 @@
 ﻿namespace HackerStories
 {
+    /// <summary>
+    /// Returns the best stores from Hacker News
+    /// </summary>
     public interface IBestStories
     {
         /// <summary>
