@@ -20,11 +20,6 @@ namespace HackerStoriesTests
 
         public int CallCount{get; private set;}
 
-        public void Clear()
-        {
-            m_Data.Clear();
-        }
-
         public Task<Stream> Get(string endpoint)
         {
             this.CallCount++;
