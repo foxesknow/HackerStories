@@ -37,6 +37,16 @@ namespace HackerStoriesTests
         }
 
         [Test]
+        public void DataNotAvailable()
+        {
+            m_DataLoader.Add("http://foo/beststories.json", "[38081633, 38071508]");
+
+            var bestStories = new BestStories(m_RankingCache, m_StoryCache);
+
+            Assert.CatchAsync(async () => await bestStories.GetBestStories(2));
+        }
+
+        [Test]
         public async Task GetBestStories()
         {
             var bestStories = new BestStories(m_RankingCache, m_StoryCache);

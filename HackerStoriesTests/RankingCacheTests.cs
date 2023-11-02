@@ -23,6 +23,15 @@ namespace HackerStoriesTests
         }
 
         [Test]
+        public void EndpointNotFound()
+        {
+            var dataLoader = new MockDataLoader();
+
+            var cache = new RankingCache(m_RankingCacheSettings, dataLoader, m_Clock);            
+            Assert.CatchAsync(async () => await cache.GetBestStories());
+        }
+
+        [Test]
         public async Task DataIsLoaded()
         {
             var dataLoader = new MockDataLoader();

@@ -20,6 +20,15 @@ namespace HackerStoriesTests
         }
 
         [Test]
+        public void EndpointNotFound()
+        {
+            var dataLoader = new MockDataLoader();
+
+            var cache = new StoryCache(m_StoryCacheSettings, dataLoader, m_Clock);
+            Assert.CatchAsync(async () => await cache.GetStory(38081633));
+        }
+
+        [Test]
         public async Task StoryIsLoaded()
         {
             var dataLoader = new MockDataLoader();
